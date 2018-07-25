@@ -1,11 +1,11 @@
 package com.partyhard.partyhard.crypt;
 
 
-public class Aes {
+public final class Aes {
 
     public Cipher cipher;
 
-    public final String encryptPassword(String password) {
+    public final static String encryptPassword(String password) {
         // decrypt(encrypt(str))==str for all unicode chars
         String enc = null;
         try {
@@ -19,7 +19,7 @@ public class Aes {
         return enc;
     }
 
-    public final String decryptKey(String key) {
+    public final static String decryptKey(String key) {
         // decrypt(encrypt(str))==str for all unicode chars
         String dec = null;
         try {

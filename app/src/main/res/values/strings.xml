@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">partyhard</string>
     <integer name="com_vk_sdk_AppId">6635089</integer>
+    <string name="password">password</string>
+    <string name="username">username</string>
+    <string name="login">SIGN IN</string>
+    <string name="or">or</string>
+    <string name="sign_in_VK">SIGN IN VIA VK</string>
 </resources>

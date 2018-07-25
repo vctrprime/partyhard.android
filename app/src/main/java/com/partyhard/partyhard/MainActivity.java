@@ -17,8 +17,6 @@ import com.vk.sdk.api.VKError;
 
 public class MainActivity extends AppCompatActivity {
 
-    DjangoApi djangoApi = new DjangoApi();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences credentials = getSharedPreferences("user_credentials", MODE_PRIVATE);
             String token = credentials.getString("token", "");
             String api_method = "parties/";
-            return djangoApi.getJSON(api_method, token);
+            return DjangoApi.getJSON(api_method, token);
         }
 
         @Override

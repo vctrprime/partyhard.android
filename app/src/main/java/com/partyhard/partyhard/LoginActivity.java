@@ -20,8 +20,10 @@ import com.vk.sdk.api.VKError;
 
 
 public class LoginActivity extends AppCompatActivity  {
-    DjangoApi djangoApi = new DjangoApi();
-    Aes aes = new Aes();
+
+    String username;
+    String password;
+    TextView infoError;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -31,6 +33,7 @@ public class LoginActivity extends AppCompatActivity  {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        infoError = (TextView) findViewById(R.id.notifError);
     }
 
     public void loginVK(View view) {
@@ -38,17 +41,26 @@ public class LoginActivity extends AppCompatActivity  {
         startActivity(intent);
     }
 
-    public void loginPartyhard(View view) {
-        new BackgroundTask().execute();
+    public void loginPartyhard(View view) {;
+        TextView textViewUser = (TextView) findViewById(R.id.userNameInput);
+        username = textViewUser.getText().toString();
+        TextView textViewPassword = (TextView) findViewById(R.id.passwordInput);
+        password = textViewPassword.getText().toString();
+        if (username.length() == 0 || password.length() == 0) {
+
+            infoError.setVisibility(View.VISIBLE);
+            infoError.setText("The both fields must be fill!");
+        }
+        else {
+            new BackgroundTask().execute();
+        }
+
     }
 
 
     public class BackgroundTask extends AsyncTask<Void, Void, String> {
 
-        TextView textViewUser = (TextView) findViewById(R.id.userNameInput);
-        String username = textViewUser.getText().toString();
-        TextView textViewPassword = (TextView) findViewById(R.id.passwordInput);
-        String password = textViewPassword.getText().toString();
+
 
         @Override
         protected void onPreExecute() {
@@ -58,9 +70,9 @@ public class LoginActivity extends AppCompatActivity  {
         @Override
         protected String doInBackground(Void... voids) {
 
-            String enc_password = aes.encryptPassword(password);
+            String enc_password = Aes.encryptPassword(password);
             String api_method = "login/?username=" + username + "&password=" + enc_password;
-            return djangoApi.getJSON(api_method, null);
+            return DjangoApi.getJSON(api_method, null);
         }
 
         @Override
@@ -70,14 +82,25 @@ public class LoginActivity extends AppCompatActivity  {
 
         @Override
         protected void onPostExecute(String result) {
-            SharedPreferences credentials =getSharedPreferences("user_credentials",MODE_PRIVATE);
-            SharedPreferences.Editor credEditor = credentials.edit();
-            String dec_token = aes.decryptKey(djangoApi.parseJSON(result, "sessionToken"));
-            credEditor.putString("token", dec_token);
-            credEditor.commit();
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            if (result == "Connection refused"){
+                infoError.setVisibility(View.VISIBLE);
+                infoError.setText("Request is failed! Check your internet connection and try again!");
+            }
+            if (result == "Incorrect") {
+                infoError.setVisibility(View.VISIBLE);
+                infoError.setText("Incorrect password or username!");
+            }
+            if (result != "Connection refused" && result != "Incorrect") {
+                SharedPreferences credentials =getSharedPreferences("user_credentials",MODE_PRIVATE);
+                SharedPreferences.Editor credEditor = credentials.edit();
+                String dec_token = Aes.decryptKey(DjangoApi.parseJSON(result, "sessionToken"));
+                credEditor.putString("token", dec_token);
+                credEditor.commit();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
         }
 
     }

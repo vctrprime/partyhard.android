@@ -18,8 +18,7 @@ public class LoginVKActivity extends AppCompatActivity {
 
     private String[] scope = new String[]{};
     private String accessToken;
-    DjangoApi djangoApi = new DjangoApi();
-    Aes aes = new Aes();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -42,9 +41,9 @@ public class LoginVKActivity extends AppCompatActivity {
         protected String doInBackground(Void... voids) {
 
 
-            String enc_token = aes.encryptPassword(accessToken);
+            String enc_token = Aes.encryptPassword(accessToken);
             String api_method = "vk-login/?auth_token=" + enc_token;
-            return djangoApi.getJSON(api_method, null);
+            return DjangoApi.getJSON(api_method, null);
         }
 
         @Override
@@ -56,7 +55,7 @@ public class LoginVKActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             SharedPreferences credentials =getSharedPreferences("user_credentials",MODE_PRIVATE);
             SharedPreferences.Editor credEditor = credentials.edit();
-            String dec_token = aes.decryptKey(djangoApi.parseJSON(result, "sessionToken"));
+            String dec_token = Aes.decryptKey(DjangoApi.parseJSON(result, "sessionToken"));
             credEditor.putString("token", dec_token);
             credEditor.commit();
             Intent intent = new Intent(LoginVKActivity.this, MainActivity.class);

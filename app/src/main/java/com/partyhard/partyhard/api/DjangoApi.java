@@ -11,22 +11,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class DjangoApi {
+public final class DjangoApi {
 
-    String server = "http://192.168.1.5:8000/api/home/";
+    private static String server = "http://192.168.1.5:8000/api/home/";
 
-    JSONObject jsonObject;
+    private static JSONObject jsonObject;
     JSONArray jsonArray;
-    public String getJSON(String jsonUrl, String authorization){
+    public static String getJSON(String jsonUrl, String authorization){
         String JSON_STRING;
         String result = null;
         URL url = null;
@@ -44,12 +46,22 @@ public class DjangoApi {
 
         } catch (IOException e) {
             e.printStackTrace();
+
         }
         InputStream inputStream = null;
         try {
             inputStream = httpURLConnection.getInputStream();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
+            if (e instanceof FileNotFoundException){
+                return "Incorrect";
+            }
+            else {
+                return "Connection refused";
+            }
+
+
         }
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder stringBuilder = new StringBuilder();
@@ -74,7 +86,7 @@ public class DjangoApi {
         return stringBuilder.toString().trim();
     }
 
-    public String parseJSON(String stringJSON, String key) {
+    public static String parseJSON(String stringJSON, String key) {
 
         String result = null;
         try {
