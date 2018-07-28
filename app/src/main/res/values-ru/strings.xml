@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">partyhard</string>
+    <integer name="com_vk_sdk_AppId">6635089</integer>
+    <string name="password">пароль</string>
+    <string name="username">пользователь</string>
+    <string name="login">Войти</string>
+    <string name="or">или</string>
+    <string name="sign_in_VK">Войти через VK</string>
+    <string name="no_connection">Ошибка подключения...Повторите попытку позже!</string>
+    <string name="no_fill">Вы точно заполнили оба поля выше?</string>
+    <string name="inv_up">Неправильное имя пользователя или пароль!</string>
+    <string name="reg_but">Еще не с нами? Регистрируйся!</string>
+</resources>

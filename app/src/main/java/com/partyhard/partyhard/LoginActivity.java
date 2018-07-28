@@ -29,11 +29,12 @@ public class LoginActivity extends AppCompatActivity  {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window w = getWindow(); // in Activity's onCreate() for instance
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+            //w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         infoError = (TextView) findViewById(R.id.notifError);
+
     }
 
     public void loginVK(View view) {
@@ -41,7 +42,8 @@ public class LoginActivity extends AppCompatActivity  {
         startActivity(intent);
     }
 
-    public void loginPartyhard(View view) {;
+    public void loginPartyhard(View view) {
+
         TextView textViewUser = (TextView) findViewById(R.id.userNameInput);
         username = textViewUser.getText().toString();
         TextView textViewPassword = (TextView) findViewById(R.id.passwordInput);
@@ -49,9 +51,10 @@ public class LoginActivity extends AppCompatActivity  {
         if (username.length() == 0 || password.length() == 0) {
 
             infoError.setVisibility(View.VISIBLE);
-            infoError.setText("The both fields must be fill!");
+            infoError.setText(R.string.no_fill);
         }
         else {
+            findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
             new BackgroundTask().execute();
         }
 
@@ -82,13 +85,14 @@ public class LoginActivity extends AppCompatActivity  {
 
         @Override
         protected void onPostExecute(String result) {
+            findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
             if (result == "Connection refused"){
                 infoError.setVisibility(View.VISIBLE);
-                infoError.setText("Request is failed! Check your internet connection and try again!");
+                infoError.setText(R.string.no_connection);
             }
             if (result == "Incorrect") {
                 infoError.setVisibility(View.VISIBLE);
-                infoError.setText("Incorrect password or username!");
+                infoError.setText(R.string.inv_up);
             }
             if (result != "Connection refused" && result != "Incorrect") {
                 SharedPreferences credentials =getSharedPreferences("user_credentials",MODE_PRIVATE);

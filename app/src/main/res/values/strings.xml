@@ -6,4 +6,8 @@
     <string name="login">SIGN IN</string>
     <string name="or">or</string>
     <string name="sign_in_VK">SIGN IN VIA VK</string>
+    <string name="no_connection">Request is failed...Check your internet connection and try again!</string>
+    <string name="no_fill">Have you exactly filled both fields above?</string>
+    <string name="inv_up">Invalid username or password!</string>
+    <string name="reg_but">No account yet? Create one!</string>
 </resources>
