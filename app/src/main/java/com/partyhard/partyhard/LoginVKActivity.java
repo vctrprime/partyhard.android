@@ -1,10 +1,14 @@
 package com.partyhard.partyhard;
 
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.partyhard.partyhard.api.DjangoApi;
 import com.partyhard.partyhard.crypt.Aes;
@@ -53,14 +57,34 @@ public class LoginVKActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            SharedPreferences credentials =getSharedPreferences("user_credentials",MODE_PRIVATE);
-            SharedPreferences.Editor credEditor = credentials.edit();
-            String dec_token = Aes.decryptKey(DjangoApi.parseJSON(result, "sessionToken"));
-            credEditor.putString("token", dec_token);
-            credEditor.commit();
-            Intent intent = new Intent(LoginVKActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            if (result == "Connection refused"){
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginVKActivity.this, R.style.MyDialogTheme);
+                builder/*.setTitle("Важное сообщение!")*/
+                        .setMessage(R.string.no_connection)
+                        .setCancelable(false)
+                        .setNeutralButton("ОК",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                        Intent intent = new Intent(LoginVKActivity.this, LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+            else {
+                SharedPreferences credentials =getSharedPreferences("user_credentials",MODE_PRIVATE);
+                SharedPreferences.Editor credEditor = credentials.edit();
+                String dec_token = Aes.decryptKey(DjangoApi.parseJSON(result, "sessionToken"));
+                credEditor.putString("token", dec_token);
+                credEditor.commit();
+                Intent intent = new Intent(LoginVKActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
         }
 
     }
