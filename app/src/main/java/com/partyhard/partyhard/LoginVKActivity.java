@@ -79,6 +79,10 @@ public class LoginVKActivity extends AppCompatActivity {
                 SharedPreferences.Editor credEditor = credentials.edit();
                 String dec_token = Aes.decryptKey(DjangoApi.parseJSON(result, "sessionToken"));
                 credEditor.putString("token", dec_token);
+                String avatar = DjangoApi.parseJSON(result, "avatar");
+                credEditor.putString("avatar", avatar);
+                String username = DjangoApi.parseJSON(result, "username");
+                credEditor.putString("username", username);
                 credEditor.commit();
                 Intent intent = new Intent(LoginVKActivity.this, MainActivity.class);
                 startActivity(intent);

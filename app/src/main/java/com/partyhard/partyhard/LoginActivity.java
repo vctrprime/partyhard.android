@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity  {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window w = getWindow(); // in Activity's onCreate() for instance
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            //w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+            w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -99,6 +99,10 @@ public class LoginActivity extends AppCompatActivity  {
                 SharedPreferences.Editor credEditor = credentials.edit();
                 String dec_token = Aes.decryptKey(DjangoApi.parseJSON(result, "sessionToken"));
                 credEditor.putString("token", dec_token);
+                String avatar = DjangoApi.parseJSON(result, "avatar");
+                credEditor.putString("avatar", avatar);
+                String username = DjangoApi.parseJSON(result, "username");
+                credEditor.putString("username", username);
                 credEditor.commit();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);

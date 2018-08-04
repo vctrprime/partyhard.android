@@ -24,6 +24,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 public final class DjangoApi {
 
+    public static final String SERVER = "http://192.168.1.5:8000/";
+
     private static String server = "http://192.168.1.5:8000/api/home/";
 
     private static JSONObject jsonObject;
