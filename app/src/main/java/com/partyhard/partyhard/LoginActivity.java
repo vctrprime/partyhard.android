@@ -55,13 +55,13 @@ public class LoginActivity extends AppCompatActivity  {
         }
         else {
             findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-            new BackgroundTask().execute();
+            new LoginTask().execute();
         }
 
     }
 
 
-    public class BackgroundTask extends AsyncTask<Void, Void, String> {
+    public class LoginTask extends AsyncTask<Void, Void, String> {
 
 
 

@@ -25,6 +25,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
+    SharedPreferences credentials;
+    HomeFragment homeFragment;
+    FavoritesFragment favoritesFragment;
+    SettingsFragment settingsFragment;
+
+    Fragment currentFragment;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -36,17 +44,29 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        createFragments();
         loadProfileImage();
         configureBottomNavBar();
+    }
 
-        //new BackgroundTask().execute();
+    private void createFragments(){
+        credentials = getSharedPreferences("user_credentials", MODE_PRIVATE);
+        homeFragment = new HomeFragment();
+        favoritesFragment = new FavoritesFragment();
+        settingsFragment = new SettingsFragment();
+
     }
 
     private void configureBottomNavBar() {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationBar);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new HomeFragment()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
+                settingsFragment).hide(settingsFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
+                favoritesFragment).hide(favoritesFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
+                homeFragment).commit();
+        currentFragment = homeFragment;
     }
 
 
@@ -54,29 +74,26 @@ public class MainActivity extends AppCompatActivity {
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selectedFragment = null;
-
+                    getSupportFragmentManager().beginTransaction().hide(currentFragment).commit();
                     switch (item.getItemId()){
                         case R.id.nav_home:
-                            selectedFragment = new HomeFragment();
+                            currentFragment = homeFragment;
                             break;
                         case R.id.nav_favs:
-                            selectedFragment = new FavoritesFragment();
+                            currentFragment = favoritesFragment;
                             break;
                         case  R.id.nav_settings:
-                            selectedFragment = new SettingsFragment();
+                            currentFragment = settingsFragment;
                             break;
                     }
+                    getSupportFragmentManager().beginTransaction().show(currentFragment).commit();
 
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                            selectedFragment).commit();
 
                     return true;
                 }
             };
 
     public void logout(View view) {
-        SharedPreferences credentials = getSharedPreferences("user_credentials", MODE_PRIVATE);
         SharedPreferences.Editor credEditor = credentials.edit();
         credEditor.putString("token", "");
         credEditor.commit();
@@ -86,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadProfileImage(){
-        SharedPreferences credentials = getSharedPreferences("user_credentials", MODE_PRIVATE);
         String avatar = credentials.getString("avatar", "");
         avatar = avatar.contains("http") ? avatar : DjangoApi.SERVER + avatar;
         CircleImageView imageView = (CircleImageView)findViewById(R.id.profile_image);
@@ -94,34 +110,4 @@ public class MainActivity extends AppCompatActivity {
                 .load(avatar)
                 .into(imageView);
     }
-
-    public class BackgroundTask extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-
-            SharedPreferences credentials = getSharedPreferences("user_credentials", MODE_PRIVATE);
-            String token = credentials.getString("token", "");
-            String api_method = "parties/";
-            return DjangoApi.getJSON(api_method, token);
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            TextView textView = (TextView) findViewById(R.id.test_text);
-            textView.setText(result);
-        }
-
-    }
-
 }

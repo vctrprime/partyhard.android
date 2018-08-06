@@ -33,8 +33,26 @@ public class LoginVKActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                accessToken = res.accessToken;
+                new LoginVkTask().execute();
 
-    public class BackgroundTask extends AsyncTask<Void, Void, String> {
+                // Пользователь успешно авторизовался
+            }
+            @Override
+            public void onError(VKError error) {
+                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+            }
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public class LoginVkTask extends AsyncTask<Void, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -91,24 +109,5 @@ public class LoginVKActivity extends AppCompatActivity {
 
         }
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
-            @Override
-            public void onResult(VKAccessToken res) {
-                accessToken = res.accessToken;
-                new BackgroundTask().execute();
-
-                // Пользователь успешно авторизовался
-            }
-            @Override
-            public void onError(VKError error) {
-                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
-            }
-        })) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 }
