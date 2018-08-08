@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.partyhard.partyhard.LoginActivity;
 import com.partyhard.partyhard.MainActivity;
+import com.partyhard.partyhard.domain.Party;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +20,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -29,7 +31,7 @@ public final class DjangoApi {
     private static String server = "http://192.168.1.5:8000/api/home/";
 
     private static JSONObject jsonObject;
-    JSONArray jsonArray;
+    private static JSONArray jsonArray;
     public static String getJSON(String jsonUrl, String authorization){
         String JSON_STRING;
         String result = null;
@@ -110,6 +112,31 @@ public final class DjangoApi {
         try {
             assert jsonObject != null;
             result = jsonObject.getString(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static ArrayList<Party> parseJSONParties(String json_string){
+        ArrayList<Party> result = new ArrayList<>();
+        try {
+            jsonArray = new JSONArray(json_string);
+            int count = 0;
+            String title, description, username;
+            int partyId;
+            while(count < jsonArray.length()){
+                JSONObject jo = jsonArray.getJSONObject(count);
+                partyId = jo.getInt("party_id");
+                title = jo.getString("title");
+                description = jo.getString("description");
+                String user = jo.getString("user");
+                username = parseJSON(user, "username");
+                Party party = new Party(partyId, title, description, username);
+                result.add(party);
+                count++;
+
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

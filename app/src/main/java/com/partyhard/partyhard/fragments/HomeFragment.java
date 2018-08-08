@@ -12,12 +12,16 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.partyhard.partyhard.MainActivity;
 import com.partyhard.partyhard.R;
+import com.partyhard.partyhard.adapters.PartiesAdapter;
 import com.partyhard.partyhard.api.DjangoApi;
+import com.partyhard.partyhard.domain.Party;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -25,7 +29,8 @@ import static android.content.Context.MODE_PRIVATE;
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
+    PartiesAdapter partiesAdapter;
+    ListView listView;
 
     @Nullable
     @Override
@@ -79,11 +84,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         @Override
         protected void onPostExecute(String result) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.test_text);
-            textView.setText(result);
-//            Random random = new Random();
-//            textView.setText("Котика пора кормить. Его не кормили уже "
-//                    + (1 + random.nextInt(10)) + " мин.");
+            //TextView textView = (TextView) getActivity().findViewById(R.id.test_text);
+            //textView.setText(DjangoApi.parseJSON(result, ""));
+            ArrayList<Party> parties = DjangoApi.parseJSONParties(result);
+            listView = (ListView)getActivity().findViewById(R.id.listview_parties);
+            partiesAdapter = new PartiesAdapter(getActivity(), parties);
+            listView.setAdapter(partiesAdapter);
             mSwipeRefreshLayout.setRefreshing(false);
 
         }
