@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import com.partyhard.partyhard.LoginActivity;
 import com.partyhard.partyhard.MainActivity;
 import com.partyhard.partyhard.domain.Party;
+import com.partyhard.partyhard.domain.ToJoinRequest;
+import com.partyhard.partyhard.domain.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,9 +22,13 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
+import static java.lang.Integer.parseInt;
 
 public final class DjangoApi {
 
@@ -123,16 +129,27 @@ public final class DjangoApi {
         try {
             jsonArray = new JSONArray(json_string);
             int count = 0;
-            String title, description, username;
+            String title, description, image;
+            Float longitude, latitude, distance;
+            Date dateStart, dateFinish;
+            User user;
             int partyId;
             while(count < jsonArray.length()){
                 JSONObject jo = jsonArray.getJSONObject(count);
                 partyId = jo.getInt("party_id");
                 title = jo.getString("title");
                 description = jo.getString("description");
-                String user = jo.getString("user");
-                username = parseJSON(user, "username");
-                Party party = new Party(partyId, title, description, username);
+                image = SERVER + "static/" + jo.getString("image").split("/static/")[1];
+                longitude = Float.parseFloat(jo.getString("longitude"));
+                latitude = Float.parseFloat(jo.getString("latitude"));
+                distance = 0F;
+                dateStart = new Date();
+                dateFinish = new Date();
+                String userJSON = jo.getString("user");
+                user = parseUserJSON(userJSON);
+                Party party = new Party(partyId, title, description, image,
+                        longitude, latitude, distance, dateStart, dateFinish,
+                        user, new ArrayList<ToJoinRequest>());
                 result.add(party);
                 count++;
 
@@ -141,6 +158,20 @@ public final class DjangoApi {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public static User parseUserJSON(String userJSON){
+        String external_avantar = parseJSON(parseJSON(userJSON, "userprofile"), "external_avatar");
+        String avatar = external_avantar == "null" ?
+                SERVER + "static/" + parseJSON(parseJSON(userJSON, "userprofile"), "avatar").split("/static/")[1]:
+                external_avantar;
+        String display_name = parseJSON(parseJSON(userJSON, "userprofile"), "display_name");
+        String username = display_name == "null" ?
+                parseJSON(userJSON, "username"):
+                display_name;
+        return new User(username,
+                avatar,
+                parseInt(parseJSON(userJSON, "id")));
     }
 
 }

@@ -26,7 +26,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences credentials;
-    HomeFragment homeFragment;
+    public HomeFragment homeFragment;
     FavoritesFragment favoritesFragment;
     SettingsFragment settingsFragment;
 

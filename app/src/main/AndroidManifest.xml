@@ -30,6 +30,10 @@
             android:theme="@style/AppTheme"/>
         <activity android:name=".LoginVKActivity" />
 
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>
